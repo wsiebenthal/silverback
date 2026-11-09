@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  desktop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the desktop package and test tools
+        run: python -m pip install -e "./desktop[dev]"
+      - name: Run desktop tests
+        working-directory: desktop
+        run: python -m pytest
+
+  extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check extension syntax
+        run: |
+          node --check extension/src/background.js
+          node --check extension/src/popup.js
+          node --check extension/src/options.js
+          node --check extension/src/tab_policy.js
+      - name: Run extension tests
+        run: node --test extension/tests/*.test.js

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "debounce_ms": 2000,
+  "serial": {
+    "port": null,
+    "baud": 115200
+  },
+  "actions": [
+    {
+      "type": "minimize",
+      "match": "SilverBack Demo",
+      "enabled": true
+    }
+  ]
+}

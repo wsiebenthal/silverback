@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Silver Back</title>
+    <style>
+      body {
+        margin: 0;
+        width: 320px;
+        background: #1b242c;
+        color: #e7eef2;
+        font: 14px/1.45 system-ui, sans-serif;
+      }
+      main { padding: 16px; }
+      h1 { font-size: 16px; margin: 0 0 8px; }
+      p { margin: 0 0 12px; color: #c5d0d6; }
+      button {
+        background: #d5dde3;
+        color: #1b242c;
+        border: 0;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font: inherit;
+        cursor: pointer;
+      }
+      button:focus-visible { outline: 2px solid #9fd0c8; outline-offset: 2px; }
+      pre {
+        white-space: pre-wrap;
+        background: #12181d;
+        color: #e7eef2;
+        padding: 8px;
+        border-radius: 6px;
+        min-height: 3em;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Silver Back</h1>
+      <p>Sends a test approach to this extension. The desktop app does not talk to the browser yet.</p>
+      <p>
+        <button id="options" type="button">Tab patterns</button>
+      </p>
+      <button id="test" type="button">Send test trigger</button>
+      <pre id="result" aria-live="polite">Idle.</pre>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

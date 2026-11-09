@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+
+# User config. Copy silverback.config.example.json and edit that copy.
+silverback.config.json
+.env

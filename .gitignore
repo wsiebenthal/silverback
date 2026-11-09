@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Local config and secrets. The committed example is silverback.config.example.json.
+.env
+silverback.config.json
+
+# Editor and OS
+.DS_Store
+*.swp
+
+# Node
+node_modules/
+
+# PlatformIO (also ignored inside firmware/)
+.pio/
+.pioenvs/
+.piolibdeps/

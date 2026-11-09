@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Silver Back tab patterns</title>
+    <style>
+      body {
+        margin: 0;
+        background: #1b242c;
+        color: #e7eef2;
+        font: 15px/1.45 system-ui, sans-serif;
+      }
+      main { max-width: 40rem; padding: 24px; }
+      h1 { font-size: 22px; margin: 0 0 8px; }
+      p { color: #c5d0d6; }
+      label { display: block; font-weight: 600; margin: 16px 0 6px; }
+      textarea, input {
+        width: 100%;
+        box-sizing: border-box;
+        background: #12181d;
+        color: #e7eef2;
+        border: 1px solid #3c4b55;
+        border-radius: 6px;
+        padding: 8px;
+        font: inherit;
+      }
+      textarea { min-height: 7em; }
+      button {
+        margin-top: 16px;
+        background: #d5dde3;
+        color: #1b242c;
+        border: 0;
+        border-radius: 6px;
+        padding: 8px 14px;
+        font: inherit;
+        cursor: pointer;
+      }
+      #status { min-height: 1.2em; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Tab patterns</h1>
+      <p>
+        Patterns are case-insensitive text matched against a tab's URL and title.
+        One pattern per line. Examples below are placeholders, not your data.
+      </p>
+      <form id="patterns">
+        <label for="switch-patterns">Switch away when the active tab matches</label>
+        <textarea id="switch-patterns" placeholder="calendar.example&#10;bank.example"></textarea>
+        <label for="close-patterns">Close tabs that match</label>
+        <textarea id="close-patterns" placeholder="draft.example"></textarea>
+        <label for="safe-url">Page to open when no safe tab is left</label>
+        <input id="safe-url" type="text" value="about:blank" />
+        <button type="submit">Save</button>
+        <p id="status" role="status"></p>
+      </form>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>
