@@ -4,9 +4,17 @@ Silver Back is software-first. You can build and test every near-term phase with
 
 The repository today is the foundation: a simulated trigger, a rules file, minimize on Linux X11 (macOS and Windows minimize code is present and unverified here), an extension that can switch or close tabs when the popup sends a test message, a version-1 event protocol, and an ESP32 sketch that already compiles and waits for a later, optional phase.
 
-The hour figures are engineering-scope estimates so a reader can see the size of the work. They are not a delivery schedule. The software phases below add up to about ninety hours, which is well over twenty. The phone phase and the optional hardware phases sit on top of that.
+The hour figures are engineering-scope estimates so a reader can see the size of the work. They are not a delivery schedule.
 
-There is no camera phase. Silver Back does not open a webcam, take photos, record video, or detect people in images.
+| Block | Phases | Scope |
+| --- | --- | --- |
+| Near-term software | 1–7 | about 94 hours |
+| Privacy and security | 8–18 | about 180 hours |
+| Phone trigger | 19 | about 14 hours |
+| Hardware, optional | H1–H3 | about 36 hours |
+| **Remaining total** |  | **about 324 hours** |
+
+The software portion is about 288 hours, which is well over twenty. There is no camera phase. Silver Back does not open a webcam, take photos, record video, or detect people in images.
 
 ## Phase 0 — Foundation
 
@@ -99,13 +107,141 @@ Scope: about 10 hours.
 - Permission prompts on macOS and Windows written as steps, not as a guess
 - Any new desktop or extension message is versioned in the protocol doc in the same change as the code and the tests
 
-The seven software phases are the near-term product. They are about ninety hours of work, and none of them need a sensor.
+The seven software phases are the near-term product. They are about 94 hours of work, and none of them need a sensor.
 
-## Phase 8 — Phone as a trigger
+Phases 8–18 are the privacy and security work. They come after that near-term product and before [Hardware (optional)](#hardware-optional). Each one is testable with `silverback trigger` or a stdin log. None of them read a camera.
+
+<a id="phase-screen-privacy-actions"></a>
+## Phase 8 — Screen privacy actions
+
+Scope: about 24 hours.
+
+- A full-screen dim or blur overlay drawn by Silver Back, on Windows, macOS, and Linux. The user can dismiss it. It is not a screenshot and it is not saved.
+- A decoy workspace: switch to an empty virtual desktop, or to one the user prepared, and remember the way back
+- Mute system audio and pause the active media session through the OS audio API or MPRIS. Do not record audio.
+- Dismiss or hide the user's own notification popups. Do not copy notification text into the log.
+- New rule types in the config, run by `silverback trigger`, and undone on `clear` only through the restore path
+- Fake-backend tests for the overlay, the workspace switch, the mute, and the notification dismiss
+
+<a id="phase-auto-lock"></a>
+## Phase 9 — Auto-lock
+
+Scope: about 12 hours.
+
+- Call the OS lock API on Windows, macOS, and Linux
+- If a trigger stays active longer than a configured time, lock the session
+- If the trigger clears and the user does not come back within a configured time (a hotkey, or another explicit action in the app), lock the session
+- Both timers live in the rules file, and either one can be turned off
+- Tests use a fake clock and a fake lock call. The app does not store account passwords.
+
+<a id="phase-secure-restore"></a>
+## Phase 10 — Secure restore
+
+Scope: about 20 hours.
+
+- Keep the prior window and tab list until the user authenticates. A `clear` event alone does not restore.
+- A local PIN, stored only as a salted hash. The PIN is never written to the log.
+- Touch ID on macOS and Windows Hello, through those OS APIs
+- A hotkey the user chose counts as the explicit unlock
+- The held state is encrypted at rest. The key stays in the OS keychain or credential manager.
+- Tests cover a wrong PIN, a correct PIN, and the hotkey path, with a fake authenticator
+
+<a id="phase-profiles"></a>
+## Phase 11 — Profiles
 
 Scope: about 14 hours.
 
-Later software, still with no board and no camera. The phone sends the same version-1 JSON the desktop already understands. It does not open the camera, take photos, or run person detection.
+- Named rule sets. Ship office, home, cafe, and screen-share, and let the user add names.
+- Switch profile by local time of day
+- Switch profile by the SSID of the network this computer is joined to. Read that one SSID. Do not scan nearby people or devices, and do not keep a history of network names beyond the profile that was selected.
+- A manual override on the CLI, and in the tray or menu bar once that exists
+- Tests for time windows and SSID match using a fake network reader
+
+<a id="phase-meeting-guard"></a>
+## Phase 12 — Meeting guard
+
+Scope: about 16 hours.
+
+- Detect screen sharing in Zoom, Google Meet, and Microsoft Teams on Windows, macOS, and Linux, from local process or window signals
+- While sharing is on, hide the windows listed in the screen-share profile
+- When sharing stops, restore through [Phase 10](#phase-secure-restore) if that gate is enabled, otherwise through the Phase 1 restore
+- A meeting that is not sharing the screen does not hide anything
+- Tests inject a fake "sharing" signal. Meeting audio and video are not captured.
+
+<a id="phase-clipboard-guard"></a>
+## Phase 13 — Clipboard guard
+
+Scope: about 6 hours.
+
+- On trigger, clear the OS clipboard on Windows, macOS, and Linux
+- Do not read clipboard text into the log, the config, or the stats view
+- Do not put the previous clipboard contents back
+- Tests use a fake clipboard and assert that it was cleared and that its text was not stored
+
+<a id="phase-browser-extras"></a>
+## Phase 14 — Browser extras
+
+Scope: about 16 hours.
+
+- On trigger, close private or incognito windows
+- Hide tabs whose domain is on a list the user wrote. Match the domain only. Do not store page contents.
+- A content script can blur fields the user named, using CSS on selectors they configured. It does not read field values and it does not send them anywhere.
+- Tests cover domain matching and the blur decision with fixture pages. No live account pages.
+
+<a id="phase-tamper-resistance"></a>
+## Phase 15 — Tamper resistance
+
+Scope: about 18 hours.
+
+- Encrypt the rules file at rest. The key lives in the OS keychain or credential manager.
+- Sign the file and refuse to load it when the signature does not match
+- If the process is quit, or the rules change outside the app, show a local alert
+- Tests flip a byte and expect rejection, and simulate the quit alert. No remote telemetry.
+
+<a id="phase-local-event-log"></a>
+## Phase 16 — Local-only event log and stats
+
+Scope: about 10 hours.
+
+- Append a local log of time, rule id, action type, and success or failure
+- Do not store window titles, URLs, clipboard contents, notification text, images, or names
+- A local stats view: counts by day and by action type, and a control that deletes the log
+- Tests assert that a forbidden field never appears in the written record
+
+<a id="phase-secure-pairing"></a>
+## Phase 17 — Secure pairing
+
+Scope: about 20 hours.
+
+Defensive only. This stops a nearby device from forging or replaying a trigger. It does not probe or attack other devices.
+
+- One-time pairing: a short code shown on the desktop and typed on the phone or sensor. No camera.
+- Trigger messages are signed and encrypted to the paired key
+- A counter rejects a replayed message
+- An unpaired message or a bad signature is ignored and counted locally
+- If heartbeats from a paired device stop while the guard is armed, show a local alert so a missing trigger is visible
+- Tests use fixture messages: valid, replayed, unsigned, and stale. No radio hardware.
+- Builds on the phone trigger in [Phase 19](#phase-phone-trigger) or the optional sensor. Either sender can land first. The checks are the same.
+
+<a id="phase-quality"></a>
+## Phase 18 — Quality
+
+Scope: about 24 hours.
+
+- A cross-platform test suite: unit tests on every push, and opt-in OS tests for Windows, macOS, and Linux
+- Signed installers for those three desktops
+- Auto-update that checks the signature before applying a build
+- Accessibility of the settings window and the tray or menu: keyboard use, labeled controls, and contrast that meets WCAG AA for the UI Silver Back draws
+- A release checklist in the user guide that names the commands used to verify a build
+
+Phases 8–18 are about 180 hours. Together with the near-term 94 hours they are well over twenty hours of software, before the phone trigger and before any hardware.
+
+<a id="phase-phone-trigger"></a>
+## Phase 19 — Phone as a trigger
+
+Scope: about 14 hours.
+
+Later software, still with no board and no camera. The phone sends the same version-1 JSON the desktop already understands. It does not open the camera, take photos, or run person detection. Hardening of that channel is [Phase 17](#phase-secure-pairing).
 
 - Wi-Fi: the phone and the computer on one network. A small sender (a page with Approach and Clear buttons, or a tiny companion) posts those two events
 - BLE: the phone notifies, the desktop subscribes, and pairing is written down before the code ships
@@ -150,4 +286,4 @@ Scope: about 12 hours.
 
 ## How to pick up a phase
 
-Software phases land on their own and are tested with `silverback trigger` or a stdin log. The phone phase is software too, and it stays free of camera input. Hardware phases are optional and start only with a board in hand. Keep the status table in [README.md](README.md) honest when a stub becomes a working path. Update the protocol doc in the same change as any new event field.
+Software phases land on their own and are tested with `silverback trigger` or a stdin log. Phases 8–18 are privacy and security work and stay free of camera input. The phone phase is software too. Hardware phases are optional and start only with a board in hand. Keep the status table in [README.md](README.md) honest when a stub becomes a working path. Update the protocol doc in the same change as any new event field.

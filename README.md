@@ -144,6 +144,7 @@ ROADMAP.md    Software phases first, hardware optional after that
 | Extension tab switch and close | Policy is unit-tested. The popup can send a test trigger. The desktop app does not drive it yet. |
 | Native messaging | Planned. No host program is installed by this repo. |
 | Installers | Planned. Install today is a venv and `pip install -e`. |
+| Privacy and security phases (overlay, lock, profiles, pairing, and the rest) | Planned. Phases 8–18 in the roadmap. No code yet. |
 | Phone trigger over Wi-Fi or BLE | Later software phase. No camera. No code yet. |
 | ESP32 USB-serial sketch | Optional later. The sketch compiles with `pio run -e esp32dev` (PlatformIO `espressif32` 8.0.0). Not flashed. Not required. |
 | Battery, enclosure | Optional later. No code. |
@@ -152,17 +153,33 @@ ROADMAP.md    Software phases first, hardware optional after that
 
 The near-term work is software you can build and test with `silverback trigger` and `listen --stdin`. It is tracked as phases in [ROADMAP.md](ROADMAP.md):
 
-- Hide, close, focus, and restore on macOS, Windows, and Linux
-- Session rules: cooldown, quiet hours, and a replay log
-- A settings UI for the rules list
-- Native messaging so a trigger drives the extension
-- A hotkey and a tray or menu-bar control
-- Packaging and installers
-- Tests and a user guide that start from the simulated trigger
+- Hide, close, focus, and restore on macOS, Windows, and Linux (about 18 hours)
+- Session rules: cooldown, quiet hours, and a replay log (about 10 hours)
+- A settings UI for the rules list (about 16 hours)
+- Native messaging so a trigger drives the extension (about 14 hours)
+- A hotkey and a tray or menu-bar control (about 12 hours)
+- Packaging and installers (about 14 hours)
+- Tests and a user guide that start from the simulated trigger (about 10 hours)
 
-After that, a phone can send the same events over Wi-Fi or BLE, still with no camera. The ESP32, the battery path, and the enclosure are a separate **Hardware (optional)** group at the end of the roadmap, for when a board is on the desk.
+That near-term block is about 94 hours.
 
-The software phases alone are well over twenty hours. The estimates live on each phase in [ROADMAP.md](ROADMAP.md).
+After it, and still before any hardware, the roadmap adds privacy and security phases (about 180 hours):
+
+- [Screen privacy actions](ROADMAP.md#phase-screen-privacy-actions): blur or dim, a decoy workspace, mute and pause media, hide notification popups (about 24 hours)
+- [Auto-lock](ROADMAP.md#phase-auto-lock) if a trigger stays active, or if you walk away and do not return in time (about 12 hours)
+- [Secure restore](ROADMAP.md#phase-secure-restore) of windows and tabs only after a PIN, Touch ID, Windows Hello, or a hotkey (about 20 hours)
+- [Profiles](ROADMAP.md#phase-profiles) for office, home, cafe, and screen-share, chosen by time of day or the current Wi-Fi name (about 14 hours)
+- [Meeting guard](ROADMAP.md#phase-meeting-guard) while Zoom, Meet, or Teams is sharing the screen (about 16 hours)
+- [Clipboard guard](ROADMAP.md#phase-clipboard-guard) clears the clipboard on trigger and does not keep the text (about 6 hours)
+- [Browser extras](ROADMAP.md#phase-browser-extras): close private windows, hide tabs by domain, blur fields the user named (about 16 hours)
+- [Tamper resistance](ROADMAP.md#phase-tamper-resistance): encrypted and signed rules, and a local alert if the app quits or the rules change (about 18 hours)
+- [Local-only log and stats](ROADMAP.md#phase-local-event-log), with no images and no personal data (about 10 hours)
+- [Secure pairing](ROADMAP.md#phase-secure-pairing) so a nearby device cannot forge or replay a trigger (about 20 hours)
+- [Quality](ROADMAP.md#phase-quality): cross-platform tests, signed installers, signed auto-update, and accessible UI (about 24 hours)
+
+A phone can send the same events over Wi-Fi or BLE (about 14 hours), still with no camera. The ESP32, the battery path, and the enclosure are a separate **Hardware (optional)** group (about 36 hours), for when a board is on the desk.
+
+Remaining work in the roadmap is about **324 hours**. About 288 hours of that is software. The estimates live on each phase in [ROADMAP.md](ROADMAP.md). Draft GitHub issues for the eleven privacy and security phases are in [docs/issues/](docs/issues/).
 
 ## Protocol
 
