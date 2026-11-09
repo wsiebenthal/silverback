@@ -1,6 +1,6 @@
 # Desktop companion
 
-Python package that turns a Silver Back approach event into window actions. It runs on the standard library plus [pyserial](https://pypi.org/project/pyserial/) for the USB port. Python 3.11 or newer.
+Python package that turns a Silver Back approach event into window actions. Develop and test it with `silverback trigger` and `listen --stdin`. A serial port is optional and unused until the later hardware phase. It runs on the standard library plus [pyserial](https://pypi.org/project/pyserial/). Python 3.11 or newer.
 
 The root [README](../README.md) is the project overview. This file is how to run this package.
 

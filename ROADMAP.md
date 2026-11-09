@@ -1,115 +1,153 @@
 # Roadmap
 
-The repository today is the foundation: a USB-serial PIR sketch, a desktop listener with a simulated trigger and a working minimize action, an extension that can switch or close tabs when something inside the browser messages it, and the version-1 event protocol.
+Silver Back is software-first. You can build and test every near-term phase with `silverback trigger` and `silverback listen --stdin`. No ESP32, no PIR, and no camera.
 
-The phases below are the remaining product. The hour figures are engineering-scope estimates so a reader can see the size of the work. They are not a delivery schedule. Added up, the remaining phases are well over twenty hours, and a careful pass at the hardware and the three operating systems is closer to a hundred.
+The repository today is the foundation: a simulated trigger, a rules file, minimize on Linux X11 (macOS and Windows minimize code is present and unverified here), an extension that can switch or close tabs when the popup sends a test message, a version-1 event protocol, and an ESP32 sketch that already compiles and waits for a later, optional phase.
+
+The hour figures are engineering-scope estimates so a reader can see the size of the work. They are not a delivery schedule. The software phases below add up to about ninety hours, which is well over twenty. The phone phase and the optional hardware phases sit on top of that.
+
+There is no camera phase. Silver Back does not open a webcam, take photos, record video, or detect people in images.
 
 ## Phase 0 — Foundation
 
 Done in this repository.
 
-- Monorepo layout, protocol spec, example session, and config format
-- ESP32 sketch: digital pin, debounce, `hello` / `presence` / `heartbeat` on USB serial
-- Desktop: parse, debounce, `trigger`, `listen --stdin`, `listen` on a serial port, minimize by window title
+- Monorepo layout, protocol spec, example event log, and rules file
+- Desktop: parse, debounce, `trigger`, `listen --stdin`, minimize by window title
 - Extension: MV3 skeleton, tab policy, popup test trigger, options page
-- Desktop unit tests, an X11 integration test when a display is present, extension tests, CI
+- Desktop unit tests, an X11 integration test when a display is present, extension tests, CI that needs no hardware
+- ESP32 sketch left in `firmware/` for the optional hardware phases. It compiles. It is not on the near-term path
 
-## Phase 1 — Firmware you can trust on a bench
+## Phase 1 — Hide, close, focus, and restore
+
+Scope: about 18 hours.
+
+Test every action with `silverback trigger` and a `clear` line on stdin. No board.
+
+- Implement `hide`, `close`, and `focus` next to the minimize path that exists now
+- `focus` launches the configured safe app when it is not already running
+- On `clear`, restore what this session minimized, hid, or closed, from a small session log
+- Match process name as well as window title, and document the difference per OS
+- macOS: if Accessibility permission is missing, name the toggle in the error
+- Windows: actions work as the current user, with no administrator install
+- Linux: keep the X11 `xdotool` path, and either add a Wayland backend or document that limit in the status table
+- `close` refuses a match that is too broad, so a short string cannot quit a pile of unrelated windows
+- Fake-backend unit tests for each action, plus one manual check on macOS, Windows, and Linux
+
+## Phase 2 — Session rules you can rehearse from a log
+
+Scope: about 10 hours.
+
+- Occupancy: a second `approach` while a session is already open does not run the list again
+- Cooldown and quiet hours in the rules file
+- `clear` ends the session and runs restore from Phase 1
+- Write a local log and replay it with `silverback listen --stdin`
+- Tests feed NDJSON, including `docs/examples/session.ndjson`, and assert which rules ran
+
+## Phase 3 — Rules list and settings UI
+
+Scope: about 16 hours.
+
+- A window that edits the ordered rules: type, match, enabled, safe app, tab patterns, debounce, quiet hours
+- Add, remove, reorder, enable, and disable
+- Validate with the same checks as `silverback check-config` before save
+- Profiles, for example one for a lab bench and one for a desk
+- Import and export the JSON file
+- The CLI and the window read and write one file
+- UI tests for the rules model, and a manual pass that changes a rule and runs `silverback trigger`
+
+## Phase 4 — Desktop to the browser extension
+
+Scope: about 14 hours.
+
+- A native messaging host the desktop app installs and talks to
+- Chrome and Firefox host manifests, with the install path written down
+- `silverback trigger` delivers the `privacy_trigger` message already described in [docs/protocol.md](docs/protocol.md)
+- The desktop rules file is the source of truth for tab patterns; the extension mirrors it
+- Policy for pinned tabs and for the last open window
+- A test that speaks the native-messaging length-prefixed frames on a pipe, with no browser
+- Load-unpacked steps in `extension/README.md` stay accurate
+
+## Phase 5 — Hotkey and tray or menu bar
+
+Scope: about 12 hours.
+
+- A global hotkey runs the same path as `silverback trigger`
+- A second chord, or a menu item, sends `clear` and runs restore
+- Windows and Linux: a tray icon. macOS: a menu-bar item. Actions: Trigger now, Restore, Open settings, Pause, Quit
+- Pause suppresses rules until it is turned off
+- Tests cover the command routing with a fake backend. The global hook itself is a manual check per OS
+
+## Phase 6 — Packaging and installers
+
+Scope: about 14 hours.
+
+- A per-user Windows install that does not ask for an administrator
+- A macOS app bundle that can explain the Accessibility prompt
+- Linux: a `pipx` install or a simple package, documented either way
+- An extension zip attached to the release
+- Optional start at login
+- One version number across the desktop package, the extension, and the GitHub release
+- A clean machine can install and run the simulated trigger from the installed command
+
+## Phase 7 — Tests and the user guide
+
+Scope: about 10 hours.
+
+- CI stays free of hardware and free of a display for the unit tests. The live window test stays opt-in
+- A user guide that starts from an empty checkout: install, write one rule, run `silverback trigger`, see the window change, send `clear`, see restore
+- Permission prompts on macOS and Windows written as steps, not as a guess
+- Any new desktop or extension message is versioned in the protocol doc in the same change as the code and the tests
+
+The seven software phases are the near-term product. They are about ninety hours of work, and none of them need a sensor.
+
+## Phase 8 — Phone as a trigger
+
+Scope: about 14 hours.
+
+Later software, still with no board and no camera. The phone sends the same version-1 JSON the desktop already understands. It does not open the camera, take photos, or run person detection.
+
+- Wi-Fi: the phone and the computer on one network. A small sender (a page with Approach and Clear buttons, or a tiny companion) posts those two events
+- BLE: the phone notifies, the desktop subscribes, and pairing is written down before the code ships
+- The desktop runs the same debounce and the same rules it runs for `listen --stdin`
+- Tests use a local socket fixture and a recorded notify payload. A manual check is one button press on a phone and one window changing on the computer
+
+## Hardware (optional)
+
+Do this only when an ESP32 and a sensor are on the desk. The software product does not wait on it. The `firmware/` folder stays as the sketch for these phases.
+
+### H1 — ESP32 on a bench
 
 Scope: about 12 hours.
 
 - Flash `esp32dev`, capture a real session, and check it against [docs/protocol.md](docs/protocol.md)
-- Measure HC-SR501 OUT with a meter and record the voltage next to the wiring notes
-- Warmup window: suppress or flag edges for the sensor's first minute
+- Measure the PIR module's OUT pin and record the voltage next to the wiring notes
+- Suppress or flag edges during the sensor's first minute of warmup
 - Status LED patterns for booting, armed, triggered, and a stuck pin
-- Host-testable debounce state machine, shared with the sketch instead of only living inside `loop()`
-- Time-of-flight alternative (VL53L0X on I2C) that emits the same `presence` events from a distance threshold
+- A host-testable debounce state machine, shared with the sketch instead of only living in `loop()`
+- A time-of-flight alternative (VL53L0X on I2C) that emits the same `presence` events from a distance threshold
 - PlatformIO compile on CI for `esp32dev`
 
-## Phase 2 — Leave the USB cable
-
-Scope: about 16 hours.
-
-- BLE GATT service: notify the version-1 JSON line, or a framed equivalent written into the protocol doc first
-- Bonding and a desktop allow-list of sensor identities
-- Wi-Fi station mode and a small socket or websocket the desktop dials
-- Reconnect, heartbeat timeout, and a visible "sensor offline" state
-- Rule for which transport is live when USB is plugged in and when it is not
-- Desktop client for the chosen wireless transport, with a replay test that uses the same action path as serial
-
-## Phase 3 — Battery and power
+### H2 — Battery and power
 
 Scope: about 12 hours.
 
 - Pack voltage on an ADC pin through a divider, and a `battery` event added to the protocol on purpose
-- Deep sleep between edges, with the PIR as the wake source, including the sensor's own warmup after power is removed
+- Deep sleep between edges, with the PIR as the wake source, including the sensor's warmup after power is removed
 - A written current budget: asleep, advertising, and connected
-- Charge-while-running behavior when VBUS appears, and what the firmware does during that handoff
-- Low-battery policy the desktop can show
+- What the firmware does when USB power appears while a pack is attached
+- A low-battery state the desktop can show
 
-## Phase 4 — Desktop actions on each operating system
-
-Scope: about 16 hours.
-
-- Implement `hide`, `close`, and `focus` (launch the safe app when it is not running), next to the minimize path that exists now
-- Remember what was minimized and restore it on `clear`
-- Match process name as well as window title, and document the difference per OS
-- macOS: detect a missing Accessibility permission and tell the user which toggle to enable
-- Windows: per-user startup without an administrator install
-- Linux: keep the X11 `xdotool` path, and add a Wayland backend or a documented limit
-- One manual script per OS plus the fake-backend tests that already guard the planner
-
-## Phase 5 — The extension as a real companion
-
-Scope: about 12 hours.
-
-- Native messaging host installed by the desktop app, speaking the browser message already documented in the protocol
-- Chrome and Firefox host-manifest install paths
-- One config: the desktop file is the source of truth and the extension mirrors the tab patterns
-- Policy for pinned tabs and for the last open window
-- Packed zip builds and a load-unpacked document that stays accurate
-- More cases around multi-window sessions
-
-## Phase 6 — Config UI
-
-Scope: about 12 hours.
-
-- A desktop window to edit actions, debounce, the serial port, and the extension patterns
-- Validate before save, using the same checks as `check-config`
-- Profiles (a lab bench and a cubicle, for example)
-- Import and export of the JSON file
-- A tray or menu-bar presence so `listen` is not only a foreground terminal
-
-## Phase 7 — False triggers
-
-Scope: about 8 hours.
-
-- Firmware hold time: the pin must stay active, not just be stable for 200 ms
-- Desktop occupancy: ignore a new approach while the sensor is already occupied, and arm again on `clear`
-- Optional second sample or a time-of-flight range gate so a hallway passer does not fire the desk
-- Quiet hours
-- A local log that `silverback listen --stdin` can replay
-
-## Phase 8 — Enclosure and mounting
+### H3 — Enclosure and the bill of materials
 
 Scope: about 12 hours.
 
 - A printable enclosure: PIR aperture, USB strain relief, and a flat base
 - Mounts for a monitor top, a cubicle rail, and the outside of a door frame
-- Fastener list, print settings, and an assembly sequence with photos
-- CAD source in the repo (the model, not only a mesh)
-- Move the bill of materials from "reference design" to "what was actually built" only after a print exists
-
-## Phase 9 — Tests, docs, and releases
-
-Scope: about 10 hours.
-
-- A hardware checklist a contributor can run without guessing pin numbers
-- CI matrix for the desktop tests, with the live window test staying opt-in where there is no display
-- Protocol changes versioned in [docs/protocol.md](docs/protocol.md) in the same change as the firmware and the parser
-- GitHub releases that attach a firmware binary, a desktop package, and an extension zip
-- A user guide that starts from an empty desk and ends with one real trigger
+- Fastener list, print settings, and an assembly sequence
+- CAD source in the repo, not only a mesh
+- Update the README parts table from "planned reference design" to "what was built" only after a print exists
 
 ## How to pick up a phase
 
-Each phase can land as its own change. Keep the status table in [README.md](README.md) honest when a stub becomes a working path. Update the protocol doc in the same change as any new event field.
+Software phases land on their own and are tested with `silverback trigger` or a stdin log. The phone phase is software too, and it stays free of camera input. Hardware phases are optional and start only with a board in hand. Keep the status table in [README.md](README.md) honest when a stub becomes a working path. Update the protocol doc in the same change as any new event field.

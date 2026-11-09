@@ -13,7 +13,7 @@ make test
 
 `make test` runs the desktop pytest suite and the extension's node tests. The X11 minimize test runs only when `DISPLAY`, `xdotool`, `xmessage`, and `xprop` are present. CI on GitHub Actions does not have a display, so that test is skipped there and the unit tests still run.
 
-Firmware builds need [PlatformIO](https://platformio.org/) and an ESP32 toolchain:
+The near-term work is the software phases in [ROADMAP.md](ROADMAP.md). Test those with `silverback trigger` and `listen --stdin`. The ESP32 sketch is optional and later. Building it needs [PlatformIO](https://platformio.org/):
 
 ```bash
 cd firmware
@@ -39,11 +39,13 @@ A new field or event type updates three places in one change: `docs/protocol.md`
 
 ## Hardware
 
-ESP32 GPIO pins are not 5 V tolerant. Measure a sensor's output before it touches a pin, and update the wiring note in `firmware/README.md` if the reference design changes. Do not commit photos of a real desk, serial numbers, or network names from a lab.
+Hardware phases are optional and come after the software product. When someone does pick them up: ESP32 GPIO pins are not 5 V tolerant. Measure a sensor's output before it touches a pin, and update the wiring note in `firmware/README.md` if the reference design changes. Do not commit photos of a real desk, serial numbers, or network names from a lab.
 
 ## Secrets and personal data
 
 Do not commit `.env` files, `silverback.config.json`, API tokens, or window-title examples taken from a real session. The example config and the extension placeholders use made-up names (`SilverBack Demo`, `calendar.example`).
+
+Do not add a camera, webcam, photo, or video path. Silver Back does not detect people in images and does not process other people's personal data. A trigger is an explicit event.
 
 ## Commits
 

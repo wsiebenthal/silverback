@@ -1,6 +1,6 @@
 # Sensor event protocol
 
-Version 1. This is the contract between the ESP32 sketch in `firmware/` and the desktop listener in `desktop/`. The sample in [examples/session.ndjson](examples/session.ndjson) is a valid session.
+Version 1. This is the event the desktop app acts on. `silverback trigger` synthesizes an approach, and `silverback listen --stdin` reads the same lines from a file, so the app can be built with no sensor attached. The optional ESP32 sketch in `firmware/` emits these lines on USB serial when a board is available. The sample in [examples/session.ndjson](examples/session.ndjson) is a valid session.
 
 ## Transport
 
