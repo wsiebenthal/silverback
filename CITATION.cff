@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use Silver Back, please cite it as below."
+title: "Silver Back"
+abstract: "Presence sensor hardware plus a desktop app and browser extension that hides chosen apps and tabs when someone approaches."
+type: software
+authors:
+  - given-names: Wesley
+    family-names: Siebenthal
+license: MIT
+repository-code: "https://github.com/wsiebenthal/silverback"
+version: 0.1.0

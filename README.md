@@ -270,4 +270,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Pick a software phase from the roadmap. 
 
 ## License
 
-[MIT](LICENSE).
+[MIT](LICENSE). Copyright (c) 2026 Wesley Siebenthal.
+
+## Credit
+
+Silver Back was created by [Wesley Siebenthal](https://github.com/wsiebenthal). If you use it in a product, a fork, an experiment or a paper, please credit "Silver Back by Wesley Siebenthal" and link back to this repository. This is a request, not a license condition; the MIT license only requires keeping the copyright notice.
+
+GitHub's "Cite this repository" button uses [CITATION.cff](CITATION.cff).
+
+The MIT license covers the code, not the name. Please don't call a fork or a product "Silver Back" or use its logo in a way that suggests it is the official project.

@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Silver Back",
   "version": "0.1.0",
+  "author": "Wesley Siebenthal",
   "description": "Switches away from listed browser tabs when Silver Back reports someone approaching.",
   "minimum_chrome_version": "109",
   "permissions": ["tabs", "storage"],

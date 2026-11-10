@@ -1,6 +1,7 @@
 {
   "name": "silverback-extension",
   "version": "0.1.0",
+  "author": "Wesley Siebenthal",
   "private": true,
   "type": "module",
   "description": "Silver Back browser extension. Load this directory unpacked. There is no build step.",
