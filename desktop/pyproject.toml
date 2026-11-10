@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "silverback"
+version = "0.1.0"
+description = "Desktop companion for the Silver Back presence sensor."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Wesley Siebenthal" }]
+dependencies = ["pyserial>=3.5"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+silverback = "silverback.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/wsiebenthal/silverback"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["silverback*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

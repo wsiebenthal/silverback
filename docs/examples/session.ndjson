@@ -1,0 +1,5 @@
+{"v":1,"type":"hello","sensor":"pir","transport":"usb-serial","fw":"0.1.0","seq":0,"uptime_ms":20}
+{"v":1,"type":"presence","state":"approach","sensor":"pir","transport":"usb-serial","fw":"0.1.0","seq":1,"uptime_ms":800}
+{"v":1,"type":"presence","state":"approach","sensor":"pir","transport":"usb-serial","fw":"0.1.0","seq":2,"uptime_ms":900}
+{"v":1,"type":"heartbeat","sensor":"pir","transport":"usb-serial","fw":"0.1.0","seq":3,"uptime_ms":30020}
+{"v":1,"type":"presence","state":"clear","sensor":"pir","transport":"usb-serial","fw":"0.1.0","seq":4,"uptime_ms":45000}
