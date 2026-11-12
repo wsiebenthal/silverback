@@ -14,6 +14,14 @@ source .venv/bin/activate
 python -m pip install -e "./desktop[dev]"
 ```
 
+On Windows, in PowerShell:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e "./desktop[dev]"
+```
+
 ## Config
 
 Copy [silverback.config.example.json](silverback.config.example.json) to `silverback.config.json` (repo root or this directory) or to `~/.config/silverback/config.json`. You can also point `--config` or `SILVERBACK_CONFIG` at a file.
@@ -45,7 +53,7 @@ Exit codes for `trigger`: `0` when every implemented action succeeded, `1` when 
 | Linux X11 | `xdotool` | Yes, when a display and `xmessage` are available |
 | Linux Wayland | future backend | No |
 | macOS | `osascript` via System Events, needs Accessibility permission | Code only |
-| Windows | `ShowWindow(SW_MINIMIZE)` on visible top-level windows | Code only |
+| Windows | `ShowWindow(SW_MINIMIZE)` on visible top-level windows | By hand on Windows 11 |
 
 ## Tests
 

@@ -168,7 +168,8 @@ class MacOSBackend:
 class WindowsBackend:
     """Minimize top-level visible windows whose title contains the match.
 
-    Uses SW_MINIMIZE (6). This path has not been run on Windows in this repo.
+    Uses SW_MINIMIZE (6). Checked by hand on Windows 11 against a Notepad
+    window. There is no automated Windows test yet.
     """
 
     def minimize_matching(self, match: str) -> ActionResult:
@@ -225,7 +226,7 @@ def get_backend() -> LinuxBackend | MacOSBackend | WindowsBackend:
 
 def describe_minimize_support() -> str:
     if sys.platform == "win32":
-        return "Win32 ShowWindow SW_MINIMIZE (not run on Windows in this repository)"
+        return "Win32 ShowWindow SW_MINIMIZE (checked by hand on Windows 11)"
     if sys.platform == "darwin":
         tool = "found" if shutil.which("osascript") else "missing"
         return f"osascript {tool}; Accessibility permission is required"

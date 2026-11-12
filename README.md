@@ -114,7 +114,7 @@ Hiding a window is a convenience. Someone already at the desk can still read the
 | Desktop | Python 3.11+, pyserial | One process for the trigger, the log replay, and a future serial port. Tests run with no display. |
 | Linux windows | `xdotool` on X11 | Verified here. A Wayland backend is later software work. |
 | macOS windows | `osascript` and System Events | Minimize by window title. Needs Accessibility permission. Not run in this environment. |
-| Windows windows | `ShowWindow(SW_MINIMIZE)` via `ctypes` | No extra Python package. Not run on Windows in this repo. |
+| Windows windows | `ShowWindow(SW_MINIMIZE)` via `ctypes` | No extra Python package. Checked by hand on Windows 11. No automated Windows test yet. |
 | Extension | Manifest V3, no bundler | Chrome and Firefox. Tab decisions are a plain module with node tests. |
 | CI | GitHub Actions | Desktop pytest on Python 3.12, extension tests on Node 22. No hardware. |
 | Optional firmware | ESP32, Arduino, PlatformIO | Kept for a later phase. See [Hardware](#hardware-optional-later). |
